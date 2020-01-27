@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FilmsCatalog</string>
+    <string name="title_thumbnail_str">Title thumbnail</string>
+    <string name="details_button_text">Детали</string>
+</resources>
