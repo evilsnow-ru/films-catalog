@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.*
 import android.widget.*
 import androidx.core.view.get
@@ -20,12 +19,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Marks last selected film (yes, position is bad, but at now our data doesn't changes)
+        savedInstanceState?.let {
+            val selectedPosition = it.getInt(PROP_SELECTED_FILM_POSITION, -1)
+
+            if (selectedPosition >= 0) {
+                lastSelectedFilmPosition = selectedPosition
+            }
+        }
+
         mFilmsDao = FilmsDao()
 
         val filmsList = findViewById<ListView>(R.id.filmsList)
-        filmsList.adapter = FilmItemsAdapter(this, mFilmsDao.getData()) {position, filmId ->
+        filmsList.adapter = FilmItemsAdapter(this, mFilmsDao.getData(), lastSelectedFilmPosition) {position, filmId ->
             lastSelectedFilmPosition?.let {
-                filmsList.get(it)
+                filmsList[it]
                     .findViewById<TextView>(R.id.filmTitle).setTextColor(getColor(R.color.black))
             }
 
@@ -34,23 +42,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        //Marks last selected film (yes, position is bad, but at now our data doesn't changes)
-        savedInstanceState?.let {
-            val selectedPosition = it.getInt(PROP_SELECTED_FILM_POSITION, -1)
-
-            if (selectedPosition >= 0) {
-                filmsList.get(selectedPosition)
-                    .findViewById<TextView>(R.id.filmTitle).setTextColor(getColor(R.color.selectedTitle))
-            }
-        }
     }
 
     companion object {
         const val PROP_SELECTED_FILM_POSITION = "ru.evilsnow.main.SELECTED_POSITION"
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
         lastSelectedFilmPosition?.let {
             outState!!.putInt(PROP_SELECTED_FILM_POSITION, it)
         }
@@ -89,6 +88,7 @@ class MainActivity : AppCompatActivity() {
     class FilmItemsAdapter(
         private val mContext: Context,
         private val filmsArray: Array<FilmItem>,
+        private val mSelectedIndex: Int?,
         private val detailsCallback: (Int, Int) -> Unit
     ) : BaseAdapter() {
 
@@ -100,6 +100,12 @@ class MainActivity : AppCompatActivity() {
 
             val titleView = view.findViewById<TextView>(R.id.filmTitle)
             titleView.text = filmItem.title
+
+            mSelectedIndex?.let {
+                if (it == position) {
+                    titleView.setTextColor(mContext.getColor(R.color.selectedTitle))
+                }
+            }
 
             view.findViewById<ImageView>(R.id.filmTitleThumbnail).setImageResource(filmItem.image)
 
