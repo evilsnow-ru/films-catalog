@@ -2,4 +2,6 @@
     <string name="app_name">FilmsCatalog</string>
     <string name="title_thumbnail_str">Title thumbnail</string>
     <string name="details_button_text">Детали</string>
+    <string name="activity_details_title">Film details</string>
+    <string name="mi_activity_main_share">Share</string>
 </resources>
