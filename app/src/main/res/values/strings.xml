@@ -2,6 +2,9 @@
     <string name="app_name">FilmsCatalog</string>
     <string name="title_thumbnail_str">Title thumbnail</string>
     <string name="details_button_text">Детали</string>
-    <string name="activity_details_title">Film details</string>
-    <string name="mi_activity_main_share">Share</string>
+    <string name="activity_details_title">Детали фильма</string>
+    <string name="mi_activity_main_share">Рассказать</string>
+    <string name="exit_question">Уже уходите?</string>
+    <string name="dialog_exit_negative_button">Отмена</string>
+    <string name="dialog_exit_positive_button">Выход</string>
 </resources>

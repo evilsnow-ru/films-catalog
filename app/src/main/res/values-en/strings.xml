@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FilmsCatalog</string>
+    <string name="title_thumbnail_str">Title thumbnail</string>
+    <string name="details_button_text">Details</string>
+    <string name="activity_details_title">Film details</string>
+    <string name="mi_activity_main_share">Share</string>
+    <string name="exit_question">Exit app?</string>
+    <string name="dialog_exit_negative_button">Cancel</string>
+    <string name="dialog_exit_positive_button">Exit</string>
+</resources>
