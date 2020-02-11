@@ -23,16 +23,11 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Film title" />
 
-    <Button
-        android:id="@+id/filmDetailsBtn"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_margin="5dp"
-        android:text="@string/details_button_text"
+    <ImageView
+        android:id="@+id/favoriteIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/filmTitleThumbnail"
-        app:layout_constraintTop_toBottomOf="@id/filmTitle" />
-
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
