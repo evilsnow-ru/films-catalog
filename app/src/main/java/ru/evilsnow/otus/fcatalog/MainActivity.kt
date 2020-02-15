@@ -111,10 +111,18 @@ class MainActivity : AppCompatActivity(), ItemClickListener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        with(requestCode) {
-            //AR_MANAGE_FAVORITES_FILMS
+        when(requestCode) {
+            AR_MANAGE_FAVORITES_FILMS -> processRemovedFavorites(data!!)
+            else -> super.onActivityResult(requestCode, resultCode, data)
         }
-        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun processRemovedFavorites(data: Intent) {
+        if (FavoritesActivity.isHasRemoved(data)) {
+            FavoritesActivity.getRemovedFilms(data).forEach {
+                mListAdapter.getBindedPosition(it)?.let {pos -> mListAdapter.notifyItemChanged(pos) }
+            }
+        }
     }
 
     companion object {

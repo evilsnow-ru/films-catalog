@@ -14,6 +14,7 @@ class FilmItemsAdapter(
 ) : RecyclerView.Adapter<FilmItemViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
+    private val mBindedItems: MutableMap<Int, Int> = HashMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmItemViewHolder {
         val view = mInflater.inflate(R.layout.film_list_item, parent, false)
@@ -26,9 +27,15 @@ class FilmItemsAdapter(
     override fun getItemCount(): Int = filmsList.size
 
     override fun onBindViewHolder(holder: FilmItemViewHolder, position: Int) {
-        holder.bind(filmsList[position], position)
+        val filmItem = getFilmItem(position)
+        mBindedItems[filmItem.id] = position
+        holder.bind(filmItem)?.let { mBindedItems.remove(it.id) }
     }
 
     fun getFilmItem(position: Int): FilmItem = filmsList[position]
+
+    fun getBindedPosition(filmId: Int): Int? {
+        return mBindedItems[filmId]
+    }
 
 }
