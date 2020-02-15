@@ -21,7 +21,7 @@ class DetailsActivity : AppCompatActivity() {
             it.setDisplayHomeAsUpEnabled(true)
         }
 
-        mFilmDao = FilmsDao()
+        mFilmDao = FilmsDao.getInstance()
         val filmId = intent.getLongExtra(FILM_ID_PARAM, -1L)
         mFilmDao.getFilm(filmId)?.let {
             findViewById<ImageView>(R.id.filmDetailsImg).setImageResource(it.image)

@@ -5,5 +5,5 @@ data class FilmItem (
     val title: String,
     val description: Int,
     val image: Int,
-    val favorite: Boolean
+    var favorite: Boolean
 )

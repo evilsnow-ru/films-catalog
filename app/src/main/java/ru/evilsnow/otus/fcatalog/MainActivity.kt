@@ -6,54 +6,34 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
 import android.widget.*
-import androidx.core.view.get
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ru.evilsnow.otus.fcatalog.dao.FilmsDao
+import ru.evilsnow.otus.fcatalog.model.FilmItem
 import ru.evilsnow.otus.fcatalog.model.FilmItemsAdapter
+import ru.evilsnow.otus.fcatalog.model.ItemClickListener
 import ru.evilsnow.otus.fcatalog.ui.ExitDialog
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ItemClickListener {
 
     private lateinit var mFilmsDao: FilmsDao
-    private var lastSelectedFilmPosition: Int? = null
+    private lateinit var mListAdapter: FilmItemsAdapter
     private var mConfirmExitDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Marks last selected film (yes, position is bad, but at now our data doesn't changes)
-        savedInstanceState?.let {
-            val selectedPosition = it.getInt(PROP_SELECTED_FILM_POSITION, -1)
+        mFilmsDao = FilmsDao.getInstance()
+        mListAdapter = FilmItemsAdapter(this, mFilmsDao.getData(), this)
+        val listLayoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
 
-            if (selectedPosition >= 0) {
-                lastSelectedFilmPosition = selectedPosition
-            }
-        }
-
-        mFilmsDao = FilmsDao()
-
-        val filmsList = findViewById<ListView>(R.id.filmsList)
-        filmsList.adapter = FilmItemsAdapter(this, mFilmsDao.getData(), lastSelectedFilmPosition) {position, filmId ->
-            lastSelectedFilmPosition?.let {
-                filmsList[it]
-                    .findViewById<TextView>(R.id.filmTitle).setTextColor(getColor(R.color.black))
-            }
-
-            lastSelectedFilmPosition = position
-            val intent = DetailsActivity.newIntent(this@MainActivity, filmId.toLong())
-            startActivity(intent)
-        }
-
-    }
-
-    companion object {
-        const val PROP_SELECTED_FILM_POSITION = "ru.evilsnow.main.SELECTED_POSITION"
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        lastSelectedFilmPosition?.let {
-            outState!!.putInt(PROP_SELECTED_FILM_POSITION, it)
+        findViewById<RecyclerView>(R.id.filmsList).apply {
+            layoutManager = listLayoutManager
+            adapter = mListAdapter
+            addItemDecoration(DividerItemDecoration(this@MainActivity, listLayoutManager.orientation))
         }
     }
 
@@ -67,6 +47,12 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             when (it.itemId) {
+
+                R.id.favorites_menu_item -> {
+                    startActivityForResult(FavoritesActivity.newIntent(this), AR_MANAGE_FAVORITES_FILMS)
+                    return true
+                }
+
                 R.id.share_menu_item -> {
                     shareWithFriends()
                     return true
@@ -92,6 +78,47 @@ class MainActivity : AppCompatActivity() {
             putExtra(Intent.EXTRA_TEXT, "Hello. New cool app for download: https://github.com/evilsnow-ru/films-catalog")
         }
         startActivity(Intent.createChooser(shareIntent, "Share with friends"))
+    }
+
+    override fun onItemClicked(view: View, position: Int) {
+        val filmItem = mListAdapter.getFilmItem(position)
+
+        when(view.id) {
+            R.id.favoriteIcon -> onFavoriteClicked(view, filmItem)
+            else -> showFilmDetails(filmItem)
+        }
+    }
+
+    private fun showFilmDetails(filmItem: FilmItem) {
+        val intent = DetailsActivity.newIntent(this, filmItem.id.toLong())
+        startActivity(intent)
+    }
+
+    private fun onFavoriteClicked(view: View, filmItem: FilmItem) {
+        val iconResourceId: Int
+
+        if (filmItem.favorite) {
+            filmItem.favorite = false
+            iconResourceId = R.drawable.ic_favorite_border_24px
+        } else {
+            filmItem.favorite = true
+            iconResourceId = R.drawable.ic_favorite_24px
+        }
+
+        if (view is ImageView) {
+            view.setImageDrawable(ContextCompat.getDrawable(this, iconResourceId))
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        with(requestCode) {
+            //AR_MANAGE_FAVORITES_FILMS
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    companion object {
+        private const val AR_MANAGE_FAVORITES_FILMS: Int = 1
     }
 
 }
