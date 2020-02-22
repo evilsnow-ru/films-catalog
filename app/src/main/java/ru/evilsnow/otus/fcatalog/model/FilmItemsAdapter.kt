@@ -2,50 +2,40 @@ package ru.evilsnow.otus.fcatalog.model
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import ru.evilsnow.otus.fcatalog.R
 
 class FilmItemsAdapter(
-    private val mContext: Context,
-    private val filmsArray: Array<FilmItem>,
-    private val mSelectedIndex: Int?,
-    private val detailsCallback: (Int, Int) -> Unit
-) : BaseAdapter() {
+    context: Context,
+    private val filmsList: List<FilmItem>,
+    private val itemClickListener: ItemClickListener
+) : RecyclerView.Adapter<FilmItemViewHolder>() {
 
-    private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
+    private val mInflater: LayoutInflater = LayoutInflater.from(context)
+    private val mBindedItems: MutableMap<Int, Int> = HashMap()
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmItemViewHolder {
         val view = mInflater.inflate(R.layout.film_list_item, parent, false)
-        val filmItem = getItem(position)
-
-        val titleView = view.findViewById<TextView>(R.id.filmTitle)
-        titleView.text = filmItem.title
-
-        mSelectedIndex?.let {
-            if (it == position) {
-                titleView.setTextColor(mContext.getColor(R.color.selectedTitle))
-            }
-        }
-
-        view.findViewById<ImageView>(R.id.filmTitleThumbnail).setImageResource(filmItem.image)
-
-        view.findViewById<Button>(R.id.filmDetailsBtn).setOnClickListener {
-            titleView.setTextColor(mContext.getColor(R.color.selectedTitle))
-            detailsCallback.invoke(position, filmItem.id)
-        }
-
-        return view
+        val holder = FilmItemViewHolder(view, itemClickListener)
+        view.setOnClickListener(holder)
+        view.findViewById<ImageView>(R.id.favoriteIcon).setOnClickListener(holder)
+        return holder
     }
 
-    override fun getItem(position: Int): FilmItem = filmsArray[position]
+    override fun getItemCount(): Int = filmsList.size
 
-    override fun getItemId(position: Int): Long = filmsArray[position].id.toLong()
+    override fun onBindViewHolder(holder: FilmItemViewHolder, position: Int) {
+        val filmItem = getFilmItem(position)
+        mBindedItems[filmItem.id] = position
+        holder.bind(filmItem)?.let { mBindedItems.remove(it.id) }
+    }
 
-    override fun getCount(): Int = filmsArray.size
+    fun getFilmItem(position: Int): FilmItem = filmsList[position]
+
+    fun getBindedPosition(filmId: Int): Int? {
+        return mBindedItems[filmId]
+    }
 
 }
