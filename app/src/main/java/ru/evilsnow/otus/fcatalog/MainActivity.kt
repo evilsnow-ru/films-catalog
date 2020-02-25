@@ -4,44 +4,48 @@ import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import ru.evilsnow.otus.fcatalog.dao.FilmsDao
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
 import ru.evilsnow.otus.fcatalog.model.FilmItem
 import ru.evilsnow.otus.fcatalog.model.FilmItemsAdapter
 import ru.evilsnow.otus.fcatalog.model.ItemClickListener
 import ru.evilsnow.otus.fcatalog.ui.ExitDialog
 
-class MainActivity : AppCompatActivity(), ItemClickListener {
 
-    private lateinit var mFilmsDao: FilmsDao
+class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener, ItemClickListener {
+
     private lateinit var mListAdapter: FilmItemsAdapter
     private var mConfirmExitDialog: Dialog? = null
+    private var mFragmentsMap: MutableMap<Int, Fragment> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mFilmsDao = FilmsDao.getInstance()
-        mListAdapter = FilmItemsAdapter(this, mFilmsDao.getData(), this)
-        val listLayoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.VERTICAL, false)
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentsContainer)
 
-        findViewById<RecyclerView>(R.id.filmsList).apply {
-            layoutManager = listLayoutManager
-            adapter = mListAdapter
-            addItemDecoration(DividerItemDecoration(this@MainActivity, listLayoutManager.orientation))
+        if (fragment == null) {
+            val filmsFragment = FilmsFragment()
+            mFragmentsMap[R.id.navBtnHome] = filmsFragment
+
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentsContainer, filmsFragment)
+                .commit()
         }
+
+        val bottomNavView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavView.setOnNavigationItemSelectedListener(this)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.let {
-            menuInflater.inflate(R.menu.activity_main_menu, it)
-        }
-        return super.onCreateOptionsMenu(menu)
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.d("MYAPP", "Selected: ${item.itemId}")
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

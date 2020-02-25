@@ -8,4 +8,6 @@
     <string name="dialog_exit_negative_button">Отмена</string>
     <string name="dialog_exit_positive_button">Выход</string>
     <string name="favorites">Избранное</string>
+    <string name="home">Главная</string>
+    <string name="awaiting">Скоро</string>
 </resources>

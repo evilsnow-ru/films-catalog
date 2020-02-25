@@ -9,4 +9,6 @@
     <string name="dialog_exit_negative_button">Cancel</string>
     <string name="dialog_exit_positive_button">Exit</string>
     <string name="favorites">Favorites</string>
+    <string name="home">Home</string>
+    <string name="awaiting">Await</string>
 </resources>
