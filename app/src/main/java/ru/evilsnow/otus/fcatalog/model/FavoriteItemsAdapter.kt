@@ -10,7 +10,7 @@ import ru.evilsnow.otus.fcatalog.R
 class FavoriteItemsAdapter(
     context: Context,
     private val mItems: MutableList<FilmItem>,
-    private val itemClickListener: ItemClickListener
+    private val itemClickListener: FavoriteListItemListener
 ) : RecyclerView.Adapter<FavoriteItemViewHolder>() {
 
     private val mLayoutInflater: LayoutInflater = LayoutInflater.from(context)

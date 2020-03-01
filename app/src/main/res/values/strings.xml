@@ -10,4 +10,6 @@
     <string name="favorites">Избранное</string>
     <string name="home">Главная</string>
     <string name="awaiting">Скоро</string>
+    <string name="removed">Удалено</string>
+    <string name="cancel">Отменить</string>
 </resources>

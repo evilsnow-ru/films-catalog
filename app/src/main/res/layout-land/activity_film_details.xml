@@ -6,22 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/filmDetailsToolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/MainToolbar"
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/MainToolbar"/>
+
     <ImageView
         android:id="@+id/filmDetailsImg"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toStartOf="@id/filmDetailsScrollView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/filmDetailsToolbar"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ScrollView
         android:id="@+id/filmDetailsScrollView"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_margin="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/filmDetailsImg"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/filmDetailsToolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
             android:id="@+id/filmDetailsDesc"

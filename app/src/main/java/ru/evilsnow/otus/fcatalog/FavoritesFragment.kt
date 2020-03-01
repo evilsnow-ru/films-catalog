@@ -4,23 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import ru.evilsnow.otus.fcatalog.dao.FilmsDao
+import ru.evilsnow.otus.fcatalog.model.FavoriteItemsAdapter
+import ru.evilsnow.otus.fcatalog.model.FavoriteListItemListener
 import ru.evilsnow.otus.fcatalog.model.FavoritesController
 import ru.evilsnow.otus.fcatalog.model.FilmItem
-import ru.evilsnow.otus.fcatalog.model.FilmItemsAdapter
-import ru.evilsnow.otus.fcatalog.model.FilmListItemListener
 import java.lang.IllegalStateException
 
-class FilmsFragment : Fragment(), FilmListItemListener {
+class FavoritesFragment : Fragment(), FavoriteListItemListener {
 
     private val mFilmsList: MutableList<FilmItem> = ArrayList()
-    private lateinit var mFilmsAdapter: FilmItemsAdapter
+    private lateinit var mListAdapter: FavoriteItemsAdapter
     private lateinit var mFavoritesController: FavoritesController
 
     override fun onCreateView(
@@ -28,15 +27,15 @@ class FilmsFragment : Fragment(), FilmListItemListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_main, container, false)
-        val listLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        val filmsList = view.findViewById<RecyclerView>(R.id.filmsList)
-        mFilmsAdapter = FilmItemsAdapter(context!!, mFilmsList,this)
+        val view = inflater.inflate(R.layout.fragment_favorites, container, false)
 
-        filmsList.apply {
+        mListAdapter = FavoriteItemsAdapter(context!!, mFilmsList, this)
+        val listLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+
+        view.findViewById<RecyclerView>(R.id.favoriteFilmsList).apply {
             layoutManager = listLayoutManager
+            adapter = mListAdapter
             addItemDecoration(DividerItemDecoration(context, listLayoutManager.orientation))
-            adapter = mFilmsAdapter
         }
 
         return view
@@ -44,11 +43,11 @@ class FilmsFragment : Fragment(), FilmListItemListener {
 
     override fun onStart() {
         super.onStart()
-        val items = FilmsDao.getInstance().getData()
+        val items = FilmsDao.getInstance().getFavorites()
 
         if (items.isNotEmpty()) {
             mFilmsList.addAll(items)
-            mFilmsAdapter.notifyItemRangeInserted(0, items.size)
+            mListAdapter.notifyItemRangeInserted(0, items.size)
         }
     }
 
@@ -67,20 +66,37 @@ class FilmsFragment : Fragment(), FilmListItemListener {
         startActivity(intent)
     }
 
-    override fun onFavoriteSelected(view: View, filmItem: FilmItem) {
-        val iconResourceId: Int
+    override fun onRemoveSelected(view: View, filmItem: FilmItem) {
+        val position = removeFromList(filmItem)
 
-        if (filmItem.favorite) {
-            filmItem.favorite = false
-            iconResourceId = R.drawable.ic_favorite_border_24px
-        } else {
-            filmItem.favorite = true
-            iconResourceId = R.drawable.ic_favorite_24px
+        if (position > -1) {
+            mListAdapter.notifyItemRemoved(position)
+            mFavoritesController.onRemoveFromFavorites(filmItem)
+            val snackBar = Snackbar.make(view, R.string.removed, Snackbar.LENGTH_SHORT)
+
+            snackBar.setAction(R.string.cancel) {
+                mFavoritesController.onRemoveCancel(filmItem)
+                mFilmsList.add(filmItem)
+                mListAdapter.notifyItemInserted(mFilmsList.size - 1)
+            }
+
+            snackBar.show()
+        }
+    }
+
+    private fun removeFromList(filmItem: FilmItem): Int {
+        val it = mFilmsList.iterator()
+        var idx = -1
+
+        while (it.hasNext()) {
+            idx++
+            if (it.next().id == filmItem.id) {
+                it.remove()
+                return idx
+            }
         }
 
-        if (view is ImageView) {
-            view.setImageDrawable(ContextCompat.getDrawable(context!!, iconResourceId))
-        }
+        return -1
     }
 
 }
