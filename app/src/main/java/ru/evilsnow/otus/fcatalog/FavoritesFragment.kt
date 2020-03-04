@@ -19,6 +19,7 @@ import java.lang.IllegalStateException
 class FavoritesFragment : Fragment(), FavoriteListItemListener {
 
     private val mFilmsList: MutableList<FilmItem> = ArrayList()
+    private val mChangeSet: MutableSet<FilmItem> = HashSet()
     private lateinit var mListAdapter: FavoriteItemsAdapter
     private lateinit var mFavoritesController: FavoritesController
 
