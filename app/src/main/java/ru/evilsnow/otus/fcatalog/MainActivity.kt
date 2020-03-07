@@ -9,6 +9,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
+import ru.evilsnow.otus.fcatalog.event.EventController
+import ru.evilsnow.otus.fcatalog.event.FilmItemsEventController
 import ru.evilsnow.otus.fcatalog.model.FavoritesController
 import ru.evilsnow.otus.fcatalog.model.FilmItem
 import ru.evilsnow.otus.fcatalog.model.FilmItemsAdapter
@@ -18,15 +20,13 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener, FavoritesController {
+class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     private var mConfirmExitDialog: Dialog? = null
 
     private var mFragmentsMap: MutableMap<Int, Fragment> = HashMap(4)
     private var mLastSelectedFragment: Int = -1
-
-    private var mAddedFavoritesList: MutableList<FilmItem> = ArrayList()
-    private var mRemovedFavoritesList: MutableList<FilmItem> = ArrayList()
+    private val eventController: EventController<FilmItem> = FilmItemsEventController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,53 +108,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener, Favo
             putExtra(Intent.EXTRA_TEXT, "Hello. New cool app for download: https://github.com/evilsnow-ru/films-catalog")
         }
         startActivity(Intent.createChooser(shareIntent, "Share with friends"))
-    }
-
-    override fun onAddedToFavorites(film: FilmItem) {
-        mAddedFavoritesList.add(film)
-    }
-
-    override fun getAddedFilms(cleanData: Boolean): List<FilmItem> {
-        if (mAddedFavoritesList.size > 0) {
-            val result = ArrayList(mAddedFavoritesList)
-
-            if (cleanData) {
-                mAddedFavoritesList.clear()
-            }
-
-            return result
-        }
-
-        return Collections.emptyList()
-    }
-
-    override fun onRemoveFromFavorites(film: FilmItem) {
-        mRemovedFavoritesList.add(film)
-    }
-
-    override fun getRemovedItems(cleanData: Boolean): List<FilmItem> {
-        if (mRemovedFavoritesList.size > 0) {
-            val result = ArrayList(mRemovedFavoritesList)
-
-            if (cleanData) {
-                mRemovedFavoritesList.clear()
-            }
-
-            return result
-        }
-
-        return Collections.emptyList()
-    }
-
-    override fun onRemoveCancel(cancelledFilm: FilmItem) {
-        val it: MutableIterator<FilmItem> = mRemovedFavoritesList.iterator()
-
-        while (it.hasNext()) {
-            if (it.next().id == cancelledFilm.id) {
-                it.remove()
-                break
-            }
-        }
     }
 
     private fun processRemovedFavorites(data: Intent) {
