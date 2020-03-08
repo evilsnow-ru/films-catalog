@@ -30,11 +30,4 @@ class FavoriteItemsAdapter(
         holder.bind(filmItem)
     }
 
-    fun removeItem(position: Int) {
-        mItems.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-    fun getFilmItem(position: Int): FilmItem = mItems[position]
-
 }

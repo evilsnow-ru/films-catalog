@@ -1,6 +1,7 @@
 package ru.evilsnow.otus.fcatalog
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,18 +11,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import ru.evilsnow.otus.fcatalog.dao.FilmsDao
+import ru.evilsnow.otus.fcatalog.event.FavoriteRemoveAware
 import ru.evilsnow.otus.fcatalog.model.FavoriteItemsAdapter
 import ru.evilsnow.otus.fcatalog.model.FavoriteListItemListener
-import ru.evilsnow.otus.fcatalog.model.FavoritesController
 import ru.evilsnow.otus.fcatalog.model.FilmItem
-import java.lang.IllegalStateException
 
 class FavoritesFragment : Fragment(), FavoriteListItemListener {
 
+    private val TAG = Consts.APP_ROOT_LOG_TAG + "." + javaClass.simpleName
+
     private val mFilmsList: MutableList<FilmItem> = ArrayList()
     private val mChangeSet: MutableSet<FilmItem> = HashSet()
+    private var mRemoveListener: FavoriteRemoveAware? = null
+
+    private lateinit var mFilmsDao: FilmsDao
     private lateinit var mListAdapter: FavoriteItemsAdapter
-    private lateinit var mFavoritesController: FavoritesController
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,23 +46,29 @@ class FavoritesFragment : Fragment(), FavoriteListItemListener {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mFilmsDao = FilmsDao.getInstance()
+    }
+
     override fun onStart() {
         super.onStart()
-        val items = FilmsDao.getInstance().getFavorites()
+        val items = mFilmsDao.getFavorites()
 
         if (items.isNotEmpty()) {
+            mFilmsList.clear()
             mFilmsList.addAll(items)
-            mListAdapter.notifyItemRangeInserted(0, items.size)
+            mListAdapter.notifyDataSetChanged()
         }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        if (activity is FavoritesController) {
-            mFavoritesController = activity as FavoritesController
+        if (activity is FavoriteRemoveAware) {
+            mRemoveListener = activity as FavoriteRemoveAware
         } else {
-            throw IllegalStateException("Activity must implements FavoritesController")
+            Log.w(TAG, "Activity must implements FavoriteRemoveAware to propagate remove events")
         }
     }
 
@@ -72,12 +82,15 @@ class FavoritesFragment : Fragment(), FavoriteListItemListener {
 
         if (position > -1) {
             mListAdapter.notifyItemRemoved(position)
-            mFavoritesController.onRemoveFromFavorites(filmItem)
+            mChangeSet.add(filmItem)
+            mFilmsDao.removeFromFavorites(filmItem)
+
             val snackBar = Snackbar.make(view, R.string.removed, Snackbar.LENGTH_SHORT)
 
             snackBar.setAction(R.string.cancel) {
-                mFavoritesController.onRemoveCancel(filmItem)
+                mChangeSet.remove(filmItem)
                 mFilmsList.add(filmItem)
+                mFilmsDao.addToFavorites(filmItem)
                 mListAdapter.notifyItemInserted(mFilmsList.size - 1)
             }
 
@@ -98,6 +111,21 @@ class FavoritesFragment : Fragment(), FavoriteListItemListener {
         }
 
         return -1
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        if (mChangeSet.size > 0) {
+            mRemoveListener?.let {listener ->
+                mChangeSet
+                    .asSequence()
+                    .map { filmItem -> filmItem.id }
+                    .forEach { listener.onRemove(it) }
+            }
+
+            mChangeSet.clear()
+        }
     }
 
 }

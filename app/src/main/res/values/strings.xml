@@ -3,13 +3,14 @@
     <string name="title_thumbnail_str">Title thumbnail</string>
     <string name="details_button_text">Детали</string>
     <string name="activity_details_title">Детали фильма</string>
-    <string name="mi_activity_main_share">Рассказать</string>
+    <string name="share_with_friends">Поделиться</string>
     <string name="exit_question">Уже уходите?</string>
     <string name="dialog_exit_negative_button">Отмена</string>
     <string name="dialog_exit_positive_button">Выход</string>
     <string name="favorites">Избранное</string>
     <string name="home">Главная</string>
-    <string name="awaiting">Скоро</string>
+    <string name="info">Информация</string>
     <string name="removed">Удалено</string>
     <string name="cancel">Отменить</string>
+    <string name="app_info">Учебная программа по мотивам уроков OTUS</string>
 </resources>

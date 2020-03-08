@@ -27,6 +27,14 @@ class FilmsDao private constructor() {
         return null
     }
 
+    fun removeFromFavorites(film: FilmItem) {
+        film.favorite = false
+    }
+
+    fun addToFavorites(film: FilmItem) {
+        film.favorite = true
+    }
+
     companion object {
 
         private val INSTANCE: FilmsDao = FilmsDao()
