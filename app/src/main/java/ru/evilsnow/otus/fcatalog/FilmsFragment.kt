@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -92,10 +93,12 @@ class FilmsFragment : Fragment(), FilmListItemListener {
         if (filmItem.favorite) {
             mFilmsDao.removeFromFavorites(filmItem)
             iconResourceId = R.drawable.ic_favorite_border_24px
+            Toast.makeText(context, R.string.removed, Toast.LENGTH_SHORT).show()
         } else {
             filmItem.favorite = true
             mFilmsDao.addToFavorites(filmItem)
             iconResourceId = R.drawable.ic_favorite_24px
+            Toast.makeText(context, R.string.added, Toast.LENGTH_SHORT).show()
         }
 
         if (view is ImageView) {
