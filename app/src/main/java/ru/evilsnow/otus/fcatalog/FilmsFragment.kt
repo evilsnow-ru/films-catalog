@@ -25,6 +25,7 @@ class FilmsFragment : Fragment(), FilmListItemListener {
     private val mFilmsList: MutableList<FilmItem> = ArrayList()
     private var isFirstRun: Boolean = true
     private var mFavoriteRemoveController: FavoriteRemoveAware? = null
+    private var mToast: Toast? = null
 
     private lateinit var mFilmsDao: FilmsDao
     private lateinit var mFilmsAdapter: FilmItemsAdapter
@@ -87,18 +88,35 @@ class FilmsFragment : Fragment(), FilmListItemListener {
         startActivity(intent)
     }
 
+    private fun showToast(msg: Int) {
+        if (mToast == null) {
+            mToast = Toast.makeText(context, msg, Toast.LENGTH_SHORT)
+            mToast!!.show()
+        } else {
+            val toast = mToast!!
+            if (toast.view != null && toast.view.isShown) {
+                toast.setText(msg)
+            } else {
+                toast.setText(msg)
+                toast.show()
+            }
+        }
+    }
+
     override fun onFavoriteSelected(view: View, filmItem: FilmItem) {
         val iconResourceId: Int
 
         if (filmItem.favorite) {
             mFilmsDao.removeFromFavorites(filmItem)
             iconResourceId = R.drawable.ic_favorite_border_24px
-            Toast.makeText(context, R.string.removed, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, R.string.removed, Toast.LENGTH_SHORT).show()
+            showToast(R.string.removed)
         } else {
             filmItem.favorite = true
             mFilmsDao.addToFavorites(filmItem)
             iconResourceId = R.drawable.ic_favorite_24px
-            Toast.makeText(context, R.string.added, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, R.string.added, Toast.LENGTH_SHORT).show()
+            showToast(R.string.added)
         }
 
         if (view is ImageView) {
