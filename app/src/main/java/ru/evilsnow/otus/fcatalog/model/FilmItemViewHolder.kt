@@ -8,7 +8,7 @@ import ru.evilsnow.otus.fcatalog.R
 
 class FilmItemViewHolder(
     itemView: View,
-    private val mItemClickListener: ItemClickListener
+    private val mFilmListItemListener: FilmListItemListener
 ) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val thumbIv: ImageView = itemView.findViewById(R.id.filmTitleThumbnail)
@@ -32,7 +32,10 @@ class FilmItemViewHolder(
         if (favorite) R.drawable.ic_favorite_24px else R.drawable.ic_favorite_border_24px
 
     override fun onClick(v: View?) {
-        mItemClickListener.onItemClicked(v!!, adapterPosition)
+        when(v!!.id) {
+            R.id.favoriteIcon -> mFilmListItemListener.onFavoriteSelected(v, filmItem!!)
+            else -> mFilmListItemListener.onFilmSelected(v, filmItem!!)
+        }
     }
 
 }

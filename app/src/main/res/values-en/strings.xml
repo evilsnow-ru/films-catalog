@@ -4,9 +4,15 @@
     <string name="title_thumbnail_str">Title thumbnail</string>
     <string name="details_button_text">Details</string>
     <string name="activity_details_title">Film details</string>
-    <string name="mi_activity_main_share">Share</string>
+    <string name="share_with_friends">Share</string>
     <string name="exit_question">Exit app?</string>
     <string name="dialog_exit_negative_button">Cancel</string>
     <string name="dialog_exit_positive_button">Exit</string>
     <string name="favorites">Favorites</string>
+    <string name="home">Home</string>
+    <string name="info">Info</string>
+    <string name="removed">Removed</string>
+    <string name="cancel">Cancel</string>
+    <string name="app_info">Training app by OTUS lessons</string>
+    <string name="added">Added</string>
 </resources>

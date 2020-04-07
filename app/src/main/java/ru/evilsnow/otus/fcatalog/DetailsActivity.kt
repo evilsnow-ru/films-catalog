@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import ru.evilsnow.otus.fcatalog.dao.FilmsDao
 
 class DetailsActivity : AppCompatActivity() {
@@ -17,6 +18,9 @@ class DetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_film_details)
 
+        val toolbar = findViewById<Toolbar>(R.id.filmDetailsToolbar)
+        setSupportActionBar(toolbar)
+
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
         }
@@ -24,6 +28,7 @@ class DetailsActivity : AppCompatActivity() {
         mFilmDao = FilmsDao.getInstance()
         val filmId = intent.getLongExtra(FILM_ID_PARAM, -1L)
         mFilmDao.getFilm(filmId)?.let {
+            supportActionBar!!.title = it.title
             findViewById<ImageView>(R.id.filmDetailsImg).setImageResource(it.image)
             findViewById<TextView>(R.id.filmDetailsDesc).setText(it.description)
         }

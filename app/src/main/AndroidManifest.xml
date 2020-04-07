@@ -18,7 +18,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".DetailsActivity" android:label="@string/activity_details_title"/>
-        <activity android:name=".FavoritesActivity" android:label="@string/favorites"/>
     </application>
 
 </manifest>

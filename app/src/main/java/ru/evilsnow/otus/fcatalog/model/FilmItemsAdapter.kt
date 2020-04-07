@@ -9,33 +9,25 @@ import ru.evilsnow.otus.fcatalog.R
 
 class FilmItemsAdapter(
     context: Context,
-    private val filmsList: List<FilmItem>,
-    private val itemClickListener: ItemClickListener
+    private val mFilmsList: List<FilmItem>,
+    private val mFilmListItemListener: FilmListItemListener
 ) : RecyclerView.Adapter<FilmItemViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
-    private val mBindedItems: MutableMap<Int, Int> = HashMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmItemViewHolder {
         val view = mInflater.inflate(R.layout.film_list_item, parent, false)
-        val holder = FilmItemViewHolder(view, itemClickListener)
+        val holder = FilmItemViewHolder(view, mFilmListItemListener)
         view.setOnClickListener(holder)
         view.findViewById<ImageView>(R.id.favoriteIcon).setOnClickListener(holder)
         return holder
     }
 
-    override fun getItemCount(): Int = filmsList.size
+    override fun getItemCount(): Int = mFilmsList.size
 
     override fun onBindViewHolder(holder: FilmItemViewHolder, position: Int) {
-        val filmItem = getFilmItem(position)
-        mBindedItems[filmItem.id] = position
-        holder.bind(filmItem)?.let { mBindedItems.remove(it.id) }
-    }
-
-    fun getFilmItem(position: Int): FilmItem = filmsList[position]
-
-    fun getBindedPosition(filmId: Int): Int? {
-        return mBindedItems[filmId]
+        val filmItem = mFilmsList[position]
+        holder.bind(filmItem)
     }
 
 }

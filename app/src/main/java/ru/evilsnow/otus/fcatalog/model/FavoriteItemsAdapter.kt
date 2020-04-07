@@ -10,7 +10,7 @@ import ru.evilsnow.otus.fcatalog.R
 class FavoriteItemsAdapter(
     context: Context,
     private val mItems: MutableList<FilmItem>,
-    private val itemClickListener: ItemClickListener
+    private val itemClickListener: FavoriteListItemListener
 ) : RecyclerView.Adapter<FavoriteItemViewHolder>() {
 
     private val mLayoutInflater: LayoutInflater = LayoutInflater.from(context)
@@ -29,12 +29,5 @@ class FavoriteItemsAdapter(
         val filmItem = mItems[position]
         holder.bind(filmItem)
     }
-
-    fun removeItem(position: Int) {
-        mItems.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-    fun getFilmItem(position: Int): FilmItem = mItems[position]
 
 }
